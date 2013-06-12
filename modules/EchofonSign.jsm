@@ -7,6 +7,8 @@ var EXPORTED_SYMBOLS = ["EchofonSign"];
 const {classes:Cc, interfaces:Ci, utils:Cu} = Components;
 const ECHOFON_UUID = "twitternotifier@naan.net";
 
+Cu.import("resource://echofon/Models.jsm")
+
 var sign_for_sync_server = null;
 var oauth_signature = null;
 
@@ -16,38 +18,16 @@ function EchofonSign()
 
 function libraryPath(libname)
 {
-    var prop = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties);
-    var libpath = prop.get("ProfD", Ci.nsIFile);
-    libpath.append("extensions");
-    libpath.append(ECHOFON_UUID);
+  libpath = EchofonModel.libraryPath().QueryInterface(Components.interfaces.nsIFileURL).file;
+  // For XULRunner
+  if (!libpath.exists()) {
+    libpath = prop.get("DefRt", Ci.nsIFile).parent;
     libpath.append("platform");
+  }
 
-    // For XULRunner
-    if (!libpath.exists()) {
-      libpath = prop.get("DefRt", Ci.nsIFile).parent;
-      libpath.append("platform");
-    }
+  libpath.append(libname);
 
-    libpath.append(libname);
-
-    // For debugging environment
-    if (!libpath.exists()) {
-      libpath = prop.get("ProfD", Ci.nsIFile);
-      libpath.append("extensions");
-      libpath.append(ECHOFON_UUID);
-
-      var istream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
-      istream.init(libpath, 0x01, 0444, 0);
-      istream.QueryInterface(Ci.nsILineInputStream);
-      var line = {}, lines = [], hasmore;
-      istream.readLine(line);
-      istream.close();
-      libpath = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-      libpath.initWithPath(line.value);
-      libpath.append("platform");
-      libpath.append(libname);
-    }
-    return libpath.path;
+  return libpath.path;
 }
 
 function loadFunction()

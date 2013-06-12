@@ -25,7 +25,7 @@ function Echofon() {
   Components.utils.import("resource://echofon/TwitterClient.jsm");
   Components.utils.import("resource://echofon/EchofonHttpRequest.jsm");
   Components.utils.import("resource://echofon/Timeline.jsm");
-  Components.utils.import("resource://echofon/EchofonGA.jsm");
+  //Components.utils.import("resource://echofon/EchofonGA.jsm");
 
   this._pref = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefService).getBranch("extensions.twitternotifier.");
 }
@@ -103,31 +103,8 @@ Echofon.prototype = {
   },
 
   getAd: function(info) {
-
-    if (info.force == false && this._ad && this._lastAd) {
-      var now = new Date();
-      if (now - this._lastAd  < AD_INTERVAL_TIME) {
-        EchofonUtils.notifyObservers("adDidLoad", this._ad);
-        return;
-      }
-    }
-    var acct = EchofonAccountManager.instance().get();
-
-    var ad_id;
-    if (EchofonUtils.isXULRunner()) {
-      ad_id = '92'; // windows
-    }
-    else {
-      ad_id = '36'; // firefox
-    }
-
-    var url = "http://api.140proof.com/ads/user.json?hb=" + acct.user_id + "&app_id=" + ad_id;
-    var r = new EchofonHttpRequest();
-    r.setURL(url);
-    var target = this;
-    r.onload  = function (p) {target.onLoadAd(r)};
-    r.onerror = function (p) {target.onErrorLoadAd(r);};
-    r.asyncOpen();
+    this._pref.setBoolPref("licensed", true);
+    EchofonUtils.notifyObservers("removeAds");
   },
 
   onLoadAd: function (r) {
@@ -355,7 +332,7 @@ Echofon.prototype = {
   saveSearch: function(param) {
     var account = EchofonAccountManager.instance().get();
     var tc = new TwitterClient(account, this);
-    tc.post("saved_searches.create", {query:param.query});
+    tc.post("saved_searches.create", {query:param.query}, "saved_searches_create");
   },
 
   destroySavedSearch: function(param) {
@@ -443,7 +420,7 @@ Echofon.prototype = {
       if (settings.trend_location) {
         woeid = settings.trend_location[0].woeid;
       }
-      tc.get("trends." + woeid, {}, "trends");
+      tc.get("trends.place", {'id': woeid}, "trends");
     }
   },
 
@@ -543,20 +520,20 @@ Echofon.prototype = {
 
     if (arr && arr.length == 3) {
       this.post("direct_messages.new", {user: arr[1], text: arr[2], include_entities:'true'}, msg);
-      EchofonGA.instance().trackEvent("post", "direct_message");
+      //EchofonGA.instance().trackEvent("post", "direct_message");
     }
     else if (msg.isDM) {
       this.post("direct_messages.new", {user: msg.user, text: msg.status, include_entities:'true'}, msg);
-      EchofonGA.instance().trackEvent("post", "direct_message");
+      //EchofonGA.instance().trackEvent("post", "direct_message");
     }
     else {
       var status = {status:msg.status};
       if (msg.inReplyTo) {
         status["in_reply_to_status_id"] = msg.inReplyTo;
-        EchofonGA.instance().trackEvent("post", "mention");
+        //EchofonGA.instance().trackEvent("post", "mention");
       }
       else {
-        EchofonGA.instance().trackEvent("post", "status");
+        //EchofonGA.instance().trackEvent("post", "status");
       }
       if (msg.place_id) {
         status["place_id"] = msg.place_id;
@@ -572,7 +549,7 @@ Echofon.prototype = {
     Cu.import("resource://echofon/PlixiClient.jsm");
     var pc = new PlixiClient(account, this, msg);
     pc.upload(msg.images[0], msg.status)
-    EchofonGA.instance().trackEvent("post", "photo");
+    //EchofonGA.instance().trackEvent("post", "photo");
   },
 
   imageUploadDidFinish: function(context, path, url) {
@@ -591,14 +568,14 @@ Echofon.prototype = {
 
     this._req = new TwitterClient(acct, this);
     this._req.message_id = msg.id;
-    this._req.post("favorites." + msg.method + "." + msg.id, null, "favorites_" + msg.method);
+    this._req.post("favorites." + msg.method, {'id': msg.id}, "favorites_" + msg.method);
   },
 
   retweet: function(msg) {
     var account = EchofonAccountManager.instance().get();
     var req = new TwitterClient(account, this);
-    req.post("statuses.retweet." + msg.id, {}, "statuses_retweet");
-        EchofonGA.instance().trackEvent("post", "retweet");
+    req.post("statuses.retweet." + msg.id, {'trim_user': true}, "statuses_retweet");
+        //EchofonGA.instance().trackEvent("post", "retweet");
   },
 
   statuses_retweet: function (tweet, req, context) {
@@ -890,10 +867,10 @@ Echofon.prototype = {
   checkFollowing: function(acct) {
     var checkFollow = this._pref.getIntPref("checkFollow");
     if (checkFollow == 0) {
-      EchofonGA.instance().trackEvent("app", "new user");
+      //EchofonGA.instance().trackEvent("app", "new user");
     }
     if (checkFollow == 2) {
-      this.get("friendships.exists", {"user_a":acct.screen_name, "user_b":"echofon"});
+      this.get("friendships.show", {"source_screen_name":acct.screen_name, "target_screen_name":"echofon"});
     }
     checkFollow++;
     this._pref.setIntPref("checkFollow", checkFollow);
@@ -903,7 +880,7 @@ Echofon.prototype = {
     this.post("friendships.create", {screen_name:"echofon"})
   },
 
-  friendships_exists: function(resp, req, context) {
+  friendships_show: function(resp, req, context) {
     if (!resp) {
       EchofonUtils.notifyObservers("askToFollowEchofon");
     }

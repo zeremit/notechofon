@@ -39,10 +39,12 @@ function convertIdStr(obj)
 const EchofonModel = {};
 
 var gDefaultPath = null;
+var gPlatformPath = null;
 
 EchofonModel.init = function() {
   let didGetAddon = function(addon) {
     gDefaultPath = addon.getResourceURI("defaults");
+    gPlatformPath = addon.getResourceURI("platform");
     EchofonPhotoBackend.defaultPath = gDefaultPath;
 
     if (EchofonUtils.pref().getBoolPref("login")) {
@@ -68,6 +70,10 @@ EchofonModel.init = function() {
       EchofonUtils.notifyComponents("initSession");
     }
   }
+}
+
+EchofonModel.libraryPath = function() {
+  return gPlatformPath;
 }
 
 EchofonModel.isInitialized = function() {

@@ -132,11 +132,16 @@ const EchofonUtils = {
   },
 
   verifyLicense: function(email, key, callback) {
+    /*
     var r = new EchofonHttpRequest();
     var app = this.isXULRunner() ? "Echofon for Windows" : "Echofon for Firefox";
     r.setURL(LICENSE_SERVER + '?key=' + encodeURIComponent(key) + '&email=' + encodeURIComponent(email) + "&app=" + encodeURIComponent(app));
     r.onload  = function(p) {callback.onVerifyLicense(r);}
     r.asyncOpen();
+    */
+    var r = {};
+    r.status = 200;
+    callback.onVerifyLicense(r);
   },
 
   log: function(msg) {

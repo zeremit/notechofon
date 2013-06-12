@@ -5,7 +5,7 @@
 var EXPORTED_SYMBOLS = ["EchofonGA"];
 
 let ACCOUNT   = 'UA-565580-23';
-let DOWNLOAD_SOURCE = "echofon";
+let DOWNLOAD_SOURCE = "mozilla";
 const VERSION   = '4.9.1';
 const GIF       = 'http://www.google-analytics.com/__utm.gif?';
 

@@ -6,7 +6,7 @@ const {classes:Cc, interfaces:Ci, utils:Cu} = Components;
 Cu.import("resource://echofon/EchofonHttpRequest.jsm");
 
 const OAUTH_CONSUMER_KEY = "yqoymTNrS9ZDGsBnlFhIuw";
-const TWITTER_API_URL    = "api.twitter.com/1/";
+const TWITTER_API_URL    = "api.twitter.com/1.1/";
 
 function convertToHexString(data)
 {
@@ -151,7 +151,7 @@ TwitterClient.prototype = {
     if (query) {
       param['track'] = query;
     }
-    var authStr = TwitterClient.buildOAuthHeader(this._user, "GET", "https://userstream.twitter.com/2/user.json", param);
+    var authStr = TwitterClient.buildOAuthHeader(this._user, "GET", "https://userstream.twitter.com/1.1/user.json", param);
     request.setOAuthHeader(authStr, "");
 
     var target = this;
@@ -161,7 +161,7 @@ TwitterClient.prototype = {
       params.push(key + '=' + RFCEncoding(param[key]));
     }
 
-    request.setURL('https://userstream.twitter.com/2/user.json?' + params.join('&'));
+    request.setURL('https://userstream.twitter.com/1.1/user.json?' + params.join('&'));
     request.onstream  = function() {target.onStream(request);};
     request.onstop    = function() {target.onStopStream(request);};
     request.onerror   = function(reason) {target.onErrorStream(reason);}
