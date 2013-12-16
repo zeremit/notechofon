@@ -1,6 +1,6 @@
-<img width="150" height="150" src="https://0.gravatar.com/avatar/e7113286239a43c50082b6a8b238bfc0?d=https%3A%2F%2Fidenticons.github.com%2F6a37128d8dc6b7a14f7e35f051e5474c.png&amp;r=x&amp;s=150" align="right">
-
 # Not Echofon
+
+<img width="150" height="150" src="https://0.gravatar.com/avatar/e7113286239a43c50082b6a8b238bfc0?d=https%3A%2F%2Fidenticons.github.com%2F6a37128d8dc6b7a14f7e35f051e5474c.png&amp;r=x&amp;s=150" align="right">
 
 **Not Echofon** is not **Echofon**.
 
@@ -18,7 +18,9 @@ They [don't give a sh*t](http://notechofon.github.io/notechofon/images/legal.png
 
 ## How to install ?
 
-Just `git clone` this repo in your Firefox / user profile / extension directory
+Just `git clone` this repo in your Firefox / user profile / extension directory. 
+
+> Tip: To find your Firefox user profile directory, open Firefox and navigate to the following URL: `about:support`. Locate the **Application Basics** section, then **Profile Folder**, and click **Show Folder**. You will find the `extensions` folder here.
 
 ## I have a feature request or bug to report
 
